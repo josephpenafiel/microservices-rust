@@ -1,5 +1,6 @@
 mod handler;
 mod color;
+mod pablo;
 #[macro_use]
 extern crate failure;
 extern crate futures; 
@@ -63,6 +64,8 @@ enum RngRequest {
 
 
 fn main() { 
+
+    pablo::this_is_pablo();
     let addr = ([127,0,0,1], 8080).into();
     let server = Server::bind(&addr)
         .serve(|| {
