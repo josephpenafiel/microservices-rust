@@ -1,4 +1,12 @@
 use super::{Connection, Error};
+use serde_derive::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct User {
+    pub name: String, 
+    pub email: String,
+}
+
 
 pub fn create_table(conn: &Connection) -> Result<(), Error> {
     conn.execute(
@@ -12,19 +20,22 @@ pub fn create_table(conn: &Connection) -> Result<(), Error> {
     .map(drop)
 }
 
-pub fn create_user(conn: &Connection, name: &str, email: &str) -> Result<(), Error> {
+pub fn create_user(conn: &Connection, user: &User) -> Result<(), Error> {
     conn.execute(
         "INSERT INTO users (name, email) VALUES ($1, $2)",
-        &[&name, &email],
+        &[&user.name, &user.email],
     )
     .map(drop)
 }
 
-pub fn list_users(conn: &Connection) -> Result<Vec<(String, String)>, Error> {
+pub fn list_users(conn: &Connection) -> Result<Vec<User>, Error> {
     let res = conn
         .query("SELECT name, email FROM users", &[])?
         .into_iter()
-        .map(|row| (row.get(0), row.get(1)))
+        .map(|row| User{
+            name:row.get(0), 
+            email:row.get(1)
+        })
         .collect();
     Ok(res)
 }
