@@ -48,6 +48,34 @@ fn main() -> Result<(), failure::Error> {
         )
         .with_db(&url.path()[1..])
         .build();
+    let manager = MongodbConnectionManager::new(opts);
+    let pool = Pool::builder().max_size(4).build(manager)?;
+    let conn = pool.get()?;
+
+    match matches.subcommand() {
+        (CMD_ADD, Some(m)) => {
+            let user_id = m.value_of("USER_ID").unwrap().to_owned();
+            let activity = m.value_of("ACTIVITY").unwrap().to_owned();
+            let activity = Activity {
+                user_id,
+                activity,
+                datetime: Utc::now().to_string(),
+            };
+            add_activity(&conn, activity)?;
+        }
+        (CMD_LIST, _) => {
+            let list = list_activities(&conn)?;
+            for item in list {
+                println!(
+                    "user: {:20}   Activity: {:20}   Datetime: {:20}",
+                    item.user_id, item.activity, item.datetime
+                );
+            }
+        }
+        _ => {
+            matches.usage();
+        }
+    }
 
     Ok(())
 }

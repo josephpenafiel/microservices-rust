@@ -1,4 +1,4 @@
-use crate::activity::Activity;
+pub use crate::activity::Activity;
 pub use bson::{bson, doc};
 pub use chrono::offset::Utc;
 pub use clap::{
