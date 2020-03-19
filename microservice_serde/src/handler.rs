@@ -1,12 +1,12 @@
 #![allow(dead_code)]
+use crate::color::Color;
 use crate::{RngRequest, RngResponse};
 use futures::{future, Future, Stream};
 use hyper::{Body, Error, Method, Request, Response, StatusCode};
-use rand::Rng;
 use rand::seq::SliceRandom;
+use rand::Rng;
 use rand_distr::{Bernoulli, Normal, Uniform};
-use std::cmp::{min, max};
-use crate::color::Color;
+use std::cmp::{max, min};
 
 fn handle_request(request: RngRequest) -> RngResponse {
     let mut rng = rand::thread_rng();
@@ -14,7 +14,7 @@ fn handle_request(request: RngRequest) -> RngResponse {
         RngRequest::Uniform { range } => {
             let value = rng.sample(Uniform::from(range)) as f64;
             RngResponse::Value(value)
-        },
+        }
         RngRequest::Normal { mean, std_dev } => {
             let value = rng.sample(Normal::new(mean, std_dev).unwrap()) as f64;
             RngResponse::Value(value)
@@ -22,11 +22,11 @@ fn handle_request(request: RngRequest) -> RngResponse {
         RngRequest::Bernoulli { p } => {
             let value = rng.sample(Bernoulli::new(p).unwrap()) as i8 as f64;
             RngResponse::Value(value)
-        },
+        }
         RngRequest::Shuffle { mut data } => {
             data.shuffle(&mut rng);
             RngResponse::Bytes(data)
-        },
+        }
         RngRequest::Color { from, to } => {
             let red = rng.sample(color_range(from.red, to.red));
             let green = rng.sample(color_range(from.green, to.green));
@@ -62,7 +62,7 @@ pub fn microservice_handler(
                     }
                 });
             Box::new(body)
-        },
+        }
         _ => {
             let resp = Response::builder()
                 .status(StatusCode::NOT_FOUND)
@@ -70,6 +70,6 @@ pub fn microservice_handler(
                 .unwrap();
 
             Box::new(future::ok(resp))
-        },
+        }
     }
 }
