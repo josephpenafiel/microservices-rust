@@ -1,4 +1,4 @@
-use crate::Activity;
+use crate::activity::Activity;
 pub use bson::{bson, doc};
 pub use chrono::offset::Utc;
 pub use clap::{
@@ -9,7 +9,7 @@ pub use mongodb::{
     Error,
 };
 pub use r2d2::Pool;
-pub use r2d2_mongodb::{ConnectionOptionsBuilder, MongodbConnectionManager};
+pub use r2d2_mongodb::{ConnectionOptions, MongodbConnectionManager};
 pub use url::Url;
 
 pub fn add_activity(conn: &Database, activity: Activity) -> Result<(), Error> {
